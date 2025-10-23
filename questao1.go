@@ -5,27 +5,28 @@ import (
 	"sync"
 )
 
-var mutex sync.Mutex
+func addNumbers(i int, valores chan<- int, wg *sync.WaitGroup) {
+	defer wg.Done()
+	for j := 1 + i*10; j <= 10+i*10; j++ {
+		valores <- j
+	}
+}
 
 func main() {
 
 	valores := make(chan int, 20)
 	var wg sync.WaitGroup
 
-	for i := 0; i < 2; i++ {
-		wg.Add(1)
-		go func() {
-			for j := 1 + i*10; j <= 10 + i*10; j ++ {
-		 		valores <- j
-		 }
-		defer wg.Done()
-		}()
-	} 
+	wg.Add(2)
+	go addNumbers(1, valores, &wg)
+	go addNumbers(10, valores, &wg)
 
-	wg.Wait()	
-	close(valores)
-	
-	for r := range valores{
+	go func() {
+		wg.Wait()
+		close(valores)
+	}()
+
+	for r := range valores {
 		fmt.Println("resultado: ", r)
 	}
 
