@@ -39,7 +39,14 @@ func main() {
 	for {
 		select {
 		case leitura := <-canalComum:
-			fmt.Printf("[SENSOR %s]: %d\n", leitura.NomeSensor, leitura.Valor)
+			switch leitura.NomeSensor {
+			case "Temperatura":
+				fmt.Println("Sensor de Temperatura: ", leitura.Valor)
+			case "Pressão":
+				fmt.Println("Sensor de Pressão: ", leitura.Valor)
+			case "Umidade":
+				fmt.Println("Sensor de Umidade: ", leitura.Valor)
+			}
 		}
 	}
 }
